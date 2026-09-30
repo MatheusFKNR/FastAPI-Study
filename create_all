@@ -1,0 +1,10 @@
+from models import Base, db
+
+Base.metadata.create_all(bind=db)
+print("Tabelas criadas")
+
+# Esse código serve para criar automaticamente no banco de dados 
+# todas as tabelas que você definiu no seu código Python usando o SQLAlchemy (um ORM do Python).
+
+# This code is used to automatically create in the database
+# all the tables you defined in your Python code using SQLAlchemy (a Python ORM).

@@ -1,5 +1,8 @@
 from models import db
 from sqlalchemy.orm import sessionmaker
+from passlib.context import CryptContext
+
+bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def catch_session():
     try:
@@ -20,3 +23,5 @@ def catch_session():
 
         # The try executer the code than can give error,
         # and the finally runs always after it, with error or without error.
+
+        

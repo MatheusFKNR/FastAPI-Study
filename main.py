@@ -14,7 +14,7 @@ bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 #-------------------------------------------------------------------------------
 
-# Import the files for the main - importando os arquivos para o main
+# importando os arquivos para o main - Import the files for the main 
 
 from auth_routes import auth_router
 from order_routes import order_router

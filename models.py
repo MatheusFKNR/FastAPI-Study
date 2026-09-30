@@ -1,11 +1,26 @@
+#Visão geral
+# O código define três tabelas de um sistema de pedidos de pizzaria 
+# usando o ORM do SQLAlchemy (estilo clássico).
+# Cada classe vira uma tabela, e cada Column vira uma coluna.
+
+# Overview
+# the code defines three tables of a pizza ordering system
+# using the ORM of SQLAlchemy (classic style).
+# Each class becomer a table, and each Column becomes a column.
+
 # Imports e configuração do banco de dados - Imports and the database configuration
 
 from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, Boolean
 from sqlalchemy.orm import declarative_base
 from sqlalchemy_utils.types import ChoiceType
+from pathlib import Path
 
 # Cria a conexão com o banco de dados - creates the connection with the database
-db = create_engine('sqlite:///database.db')
+
+BASE_DIR = Path(__file__).resolve().parent
+db = create_engine(f"sqlite:///{BASE_DIR / 'database.db'}")
+
+#db = create_engine('sqlite:///database.db')
 
 # Cria a base do banco de dados - creates the database base
 Base = declarative_base()
@@ -53,7 +68,7 @@ class Order(Base):
 
     # Itens (ainda não foi criado - hasn't been made yet)=
 
-    def __init__(self, status, user, price):
+    def __init__(self, user, status="PENDING", price=0):
         self.status = status
         self.user = user
         self.price = price
@@ -77,13 +92,3 @@ class OrderItem(Base):
         self.unitary_price = unitary_price
         self.order = order
 
-
-#Visão geral
-# O código define três tabelas de um sistema de pedidos de pizzaria 
-# usando o ORM do SQLAlchemy (estilo clássico).
-# Cada classe vira uma tabela, e cada Column vira uma coluna.
-
-# Overview
-# the code defines three tables of a pizza ordering system
-# using the ORM of SQLAlchemy (classic style).
-# Each class becomer a table, and each Column becomes a column.

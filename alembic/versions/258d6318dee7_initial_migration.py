@@ -34,7 +34,7 @@ def upgrade() -> None:
     )
     op.create_table('orders',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('status', sqlalchemy_utils.types.choice.ChoiceType(length=255), nullable=True),
+    sa.Column('status', sa.String(length=255), nullable=True),
     sa.Column('user', sa.Integer(), nullable=False),
     sa.Column('price', sa.Float(), nullable=False),
     sa.ForeignKeyConstraint(['user'], ['users.id'], ),
