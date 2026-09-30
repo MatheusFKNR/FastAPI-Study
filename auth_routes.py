@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from jose import jwt  # pip install python-jose
 from sqlalchemy.orm import Session
 from models import User
-from dependencies import catch_session
+from dependencies import catch_session, check_token
 from dependencies import bcrypt_context, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, SECRET_KEY
 from schemas import UserSchema, LoginSchema
 from jose import jwt, JWTError
@@ -24,6 +24,8 @@ auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
 #-------------------------------------------------------------------------------
 
+# Criação do token
+
 def create_token(user_id, token_duration = timedelta(minutes = ACCESS_TOKEN_EXPIRE_MINUTES)) :
     expiration_date = datetime.now(timezone.utc) + token_duration
     dic_info = {"sub": user_id, "exp": expiration_date}
@@ -32,6 +34,8 @@ def create_token(user_id, token_duration = timedelta(minutes = ACCESS_TOKEN_EXPI
 
 #-------------------------------------------------------------------------------
 
+# Checagem do token
+
 def check_token(token, session = Depends(catch_session)):
     # Verificar se o token é valido - check if the token is valided 
     # E extrair o id do usuário do token - and extract the user id of from the token
@@ -39,6 +43,8 @@ def check_token(token, session = Depends(catch_session)):
     return user
 
 #-------------------------------------------------------------------------------
+
+# Autenticar usuário
 
 def authenticate_user(email, password, session):
     user = session.query(User).filter(User.email == email).first()
@@ -122,8 +128,7 @@ def login(login_schema: LoginSchema, session: Session = Depends(catch_session)):
     }
 
 @auth_router.get("/refres")
-async def use_refresh_token(token):
-    user = check_token(token)
+async def use_refresh_token(user: User = Depends(check_token)):
     access_token = create_token(user.id)
     return {
         "access_token": access_token,

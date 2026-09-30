@@ -1,8 +1,11 @@
+from fastapi import Depends
+from main import SECRET_KEY, ALGORITHM
 from models import db
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 import os
 from passlib.context import CryptContext
-
+from models import User
+from jose import jwt, JWTError
 
 SECRET_KEY = os.environ["SECRET_KEY"]
 ALGORITHM = "HS256"
@@ -30,4 +33,12 @@ def catch_session():
         # The try executer the code than can give error,
         # and the finally runs always after it, with error or without error.
 
-        
+#-------------------------------------------------------------------------------
+
+def check_token(token, session: Session = Depends(catch_session)):
+    try:
+        dic_info = jwt.decode(token, SECRET_KEY, ALGORITHM)
+    except JWTError:
+        user = session.query(user).filter(user.id==1).first()
+        return user
+# parei no minuto 9 da aula 7
