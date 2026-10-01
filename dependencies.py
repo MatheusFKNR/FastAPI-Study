@@ -1,5 +1,5 @@
-from fastapi import Depends
-from main import SECRET_KEY, ALGORITHM
+from fastapi import Depends, HTTPException
+from main import SECRET_KEY, ALGORITHM, oauth2_schema
 from models import db
 from sqlalchemy.orm import sessionmaker, Session
 import os
@@ -35,10 +35,13 @@ def catch_session():
 
 #-------------------------------------------------------------------------------
 
-def check_token(token, session: Session = Depends(catch_session)):
+def check_token(token: str = Depends(oauth2_schema), session: Session = Depends(catch_session)):
     try:
         dic_info = jwt.decode(token, SECRET_KEY, ALGORITHM)
+        user_id = dic_info.get("sub")
     except JWTError:
-        user = session.query(user).filter(user.id==1).first()
-        return user
-# parei no minuto 9 da aula 7
+        raise HTTPException(status_code=401, detail="access denied")
+    user = session.query(User).filter(User.id==user_id).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="invalid access")
+    return user
