@@ -91,7 +91,8 @@ def create_account(user_schema: UserSchema, session: Session = Depends(catch_ses
     new_user = User(
         name=user_schema.name,
         email=user_schema.email,
-        password=encrypted_password
+        password=encrypted_password,
+        admin=user_schema.admin
     )
 
     # 4. Salvar e confirmar no banco
