@@ -11,7 +11,7 @@
 # Imports e configuração do banco de dados - Imports and the database configuration
 
 from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey, Boolean
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy_utils.types import ChoiceType
 from pathlib import Path
 
@@ -58,6 +58,7 @@ class Order(Base):
         ("PENDING", "PENDING"),
         ("CANCELED", "CANCELED"),
         ("FINISHED", "FINISHED"),
+        ("FINISH", "FINISHED"),
     }
 
     id = Column("id", Integer, primary_key=True, autoincrement=True)
@@ -65,6 +66,7 @@ class Order(Base):
     status = Column("status", ChoiceType(choices = STATUS_ORDERS))
     user = Column("user", Integer, ForeignKey('users.id'), nullable=False)
     price = Column("price", Float, nullable=False)
+    items = relationship("orderItem", cascade="all, delete")
 
     # Itens (ainda não foi criado - hasn't been made yet)=
 
@@ -73,9 +75,19 @@ class Order(Base):
         self.user = user
         self.price = price
 
+    def calculate_price(self):
+        # Percorrer todos os itens do pedido - Go through  all the items in the order
+        # Somar todos os preços de todos os intes do pedido - add up all the prices of all the itens in the order
+       order_price = 0
+       for item in self.items:
+            item_price = item.unitary_price * item.quantity
+            order_price += item_price
+        # Editar no campo "price" o valor final do preço do pedido - edit in 'price" field the final value of the order price
+            self.price = sum(item.unitary_price * item.quantity for item in self.items)
+
     
 #Itens do pedido (pizza) - order items (pizza)
-class OrderItem(Base):
+class orderItem(Base):
     __tablename__ = 'order_items'
 
     id = Column("id", Integer, primary_key=True, autoincrement=True)
